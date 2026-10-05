@@ -1,0 +1,58 @@
+services:
+  app:
+    build: .
+    image: foundation-notes:local
+    restart: unless-stopped
+    environment:
+      DB_HOST: ${DB_HOST:?set DB_HOST in .env}
+      DB_PORT: ${DB_PORT:?set DB_PORT in .env}
+      DB_NAME: ${DB_NAME:?set DB_NAME in .env}
+      DB_USER: ${DB_USER:?set DB_USER in .env}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-}
+      PORT: ${PORT:-3000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-net
+
+  db:
+    image: postgres:17.5-alpine3.21
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    networks:
+      - app-net
+
+  adminer:
+    image: adminer:4.8.1-standalone
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-net
+
+volumes:
+  postgres-data:
+
+networks:
+  app-net:
+    driver: bridge
