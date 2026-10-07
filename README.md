@@ -9,6 +9,8 @@
 | **Deployment Cloud** | AWS (`ap-south-1`)[MUMBAI] |
 ---
 
+![CI](https://github.com/shreshya10/foundation-notes/actions/workflows/ci.yml/badge.svg)
+
 ## 1. Project Overview
 
 This repository implements a full-stack containerized Notes application built on Linux, containerized with Docker, published via GitHub Actions to GitHub Container Registry (GHCR), and deployed on AWS. 
