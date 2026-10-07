@@ -1,6 +1,5 @@
 # Foundation-Notes App (Track C - Split It)
 
-[![CI](https://github.com/YOUR_GITHUB_USERNAME/foundation-notes/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_GITHUB_USERNAME/foundation-notes/actions/workflows/ci.yml)
 
 | Field | Details |
 |---|---|
