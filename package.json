@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/Shreshya10/GFG-proj#readme",
   "dependencies": {
+    "cors": "^2.8.6",
     "express": "^5.2.1",
     "pg": "^8.23.1",
     "prom-client": "^15.1.3"
