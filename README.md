@@ -22,3 +22,16 @@ Under **Track C (Split It)**, the architectural boundaries are cleanly decoupled
 * **Cross-Origin Resource Sharing (CORS):** Strict origin-level CORS configured on the backend using the exact S3 static website endpoint.
 
 ---
+
+## Example environment table:
+
+| Variable | Purpose | Example |
+| --- | --- | --- |
+| `PORT` | HTTP port inside the app container | `3000` |
+| `DB_HOST` | Compose database service name | `db` |
+| `DB_PORT` | PostgreSQL container port | `5432` |
+| `DB_NAME` | Database name | `notes` |
+| `DB_USER` | Database user | `notes_app` |
+| `DB_PASSWORD` | Local/server-only password; never commit its real value | `not-shown` |
+
+---
