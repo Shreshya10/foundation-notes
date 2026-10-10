@@ -3,6 +3,7 @@
 const express = require('express');
 const path = require('node:path');
 const client = require('prom-client');
+const cors = require('cors');
 
 const registry = new client.Registry();
 client.collectDefaultMetrics({ register: registry });
@@ -23,6 +24,12 @@ const duration = new client.Histogram({
 function createApp(pool) {
   const app = express();
   app.use(express.json({ limit: '10kb' }));
+
+  app.use(cors({
+    origin: process.env.FRONTEND_ORIGIN || false,
+    methods: ['GET', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+  }));
 
   app.use((req, res, next) => {
     const finishTimer = duration.startTimer();

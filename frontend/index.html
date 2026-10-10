@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Field Notes</title>
+  <style>
+    body { max-width: 680px; margin: 3rem auto; padding: 0 1rem; font: 16px/1.5 system-ui, sans-serif; color: #18231c; }
+    h1 { margin-bottom: .25rem; }
+    form { display: flex; gap: .5rem; margin: 1.5rem 0; }
+    input { flex: 1; min-width: 0; padding: .7rem; }
+    button { padding: .65rem .9rem; cursor: pointer; }
+    li { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #ccd5ce; padding: .8rem 0; }
+    .error { color:#a32121; }
+  </style>
+</head>
+<body>
+  <h1>Field Notes</h1>
+  <p>A small note list backed by PostgreSQL.</p>
+  <form id="note-form">
+    <input id="content" maxlength="500" required aria-label="Note" placeholder="Write a note">
+    <button>Add note</button>
+  </form>
+  <p id="message" role="status"></p>
+  <ul id="notes"></ul>
+  <script>
+    const API_BASE = 'http://EC2_PUBLIC_IP:3000';
+    const list = document.querySelector('#notes');
+    const message = document.querySelector('#message');
+
+
+
+    async function loadNotes() {
+      const response = await fetch(`${API_BASE}/api/notes`);                              //inload notes
+      if (!response.ok) throw new Error('Could not load notes');
+      const notes = await response.json();
+      list.replaceChildren(...notes.map((note) => {
+        const item = document.createElement('li');
+        const text = document.createElement('span');
+        text.textContent = note.content;
+        const remove = document.createElement('button');
+        remove.textContent = 'Delete';
+        remove.setAttribute('aria-label', `Delete note ${note.id}`);
+        remove.addEventListener('click', async () => {
+          await fetch(`${API_BASE}/api/notes/${note.id}`, { method: 'DELETE' });           // delete button
+          await loadNotes();
+        });
+        item.append(text, remove);
+        return item;
+      }));
+    }
+
+    document.querySelector('#note-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      message.textContent = '';
+      try {
+        const response = await fetch(`${API_BASE}/api/notes`, { method: 'POST',             // submit
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: document.querySelector('#content').value }),
+        });
+        if (!response.ok) throw new Error('Note was not saved');
+        event.target.reset();
+        await loadNotes();
+      } catch (error) {
+        message.textContent = error.message;
+        message.className = 'error';
+      }
+    });
+
+    loadNotes().catch((error) => {
+      message.textContent = error.message;
+      message.className = 'error';
+    });
+  </script>
+</body>
+</html>
